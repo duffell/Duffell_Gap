@@ -4,17 +4,18 @@
 
 double delta( double q , double alpha , double Mach ){
 
-   double qNL = 1.15/pow(Mach,3.);
-   double qW = 6.1*qNL*pow(alpha*Mach,0.2);
+   double qNL = 1.04/pow(Mach,3.);
+   double qW = 21.*qNL*pow(alpha*Mach,0.2)*pow(Mach/20.,1.6);
    double delta = 1.0;
-   if( q>qNL ) delta = qNL/q*exp( (q-qNL)/qW );
+   if( q>qNL ) delta = sqrt(qNL/q);
+   delta += pow(q/qW,3.);
 
    return( delta );
 }
 
 double q_tilde( double q , double Mach , double r ){
 
-   double D = 55.*Mach;
+   double D = 2.75*Mach*Mach;
 
    return( q/sqrt( 1. + D*D*pow( pow(r,.25)-1. , 4. ) ) );
 
@@ -33,19 +34,20 @@ double one_planet( double r , double rp , double alpha , double Mach, double q )
    return( Sigma );
 }
 
+double sigma_backgnd( double r ){
+   return( exp( -pow(r/80.,1.5) )*exp(-pow(r/110.,10.)) );
+}
+
 int main(void){
 
-   double S1 = 2.5;
-   double k = 1.5;
+   int N_planets = 3;
+   double qs[3] = {2.5e-4,2e-4,2e-4};
+   double rs[3] = {13.1,33.0,68.6};
+   double alphas[3] = {0.001,0.001,0.001};
+   double Machs[3] = {10.0,12.0,14.0};
 
-   int N_planets = 2;
-   double qs[3] = {7e-4,7e-4,3e-4};
-   double rs[3] = {0.63,1.0,2.0};
-   double alphas[3] = {0.01,0.01,0.01};
-   double Machs[3] = {25.2,20.,25.};
-
-   double Rmin = 0.03;
-   double Rmax = 5.0;
+   double Rmin = 0.1;
+   double Rmax = 130.0;
 
    FILE * pFile = fopen("output.dat","w");
    int N = 1000;
@@ -53,12 +55,12 @@ int main(void){
    for( i=0 ; i<N ; ++i ){
       double x = ((double)i+.5)/(double)N;
       double r = Rmin*pow(Rmax/Rmin,x);
-      double Sigma = S1*pow(r,-k);
+      double Sigma = sigma_backgnd( r );
       int p;
       for( p=0 ; p<N_planets ; ++p ){
          Sigma *= one_planet( r , rs[p] , alphas[p] , Machs[p] , qs[p] );
       }
-      fprintf(pFile,"%e %e\n",r,Sigma);
+      fprintf(pFile,"%e %e %e\n",r,Sigma,sigma_backgnd(r));
    }
    fclose(pFile);
 
