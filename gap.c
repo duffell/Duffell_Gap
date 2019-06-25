@@ -13,11 +13,11 @@ double delta( double q , double alpha , double Mach ){
    return( delta );
 }
 
-double q_tilde( double q , double Mach , double r ){
+double q_tilde( double q , double Mach , double alpha , double r ){
 
-   double D = 2.75*Mach*Mach;
+   double D = 7.*pow(Mach,1.5)/pow(alpha,1./4.);
 
-   return( q/sqrt( 1. + D*D*pow( pow(r,.25)-1. , 4. ) ) );
+   return( q/pow( 1. + D*D*D*pow( pow(r,1./6.)-1. , 6. ) , 1./3. ) );
 
 }
 
@@ -28,7 +28,7 @@ double S_gap( double q , double alpha , double Mach ){
 
 double one_planet( double r , double rp , double alpha , double Mach, double q ){
    
-   double qt = q_tilde( q , Mach , r/rp );
+   double qt = q_tilde( q , Mach , alpha , r/rp );
    double Sigma = S_gap( qt , alpha , Mach );
 
    return( Sigma );
