@@ -1,6 +1,8 @@
 
 import math
 
+#Only two parts of this code need to be modified by the user.  The "sigma_backgnd" function, and the values of qs, rs, alphas, Machs, and potentially Rmin, Rmax, Npts, which define the range and resolution you want to sample the disk model.
+
 def delta( q = 1e-3 , alpha = 0.01 , Mach = 20. ):
 	qNL = 1.04/Mach**3
 	qW = 34*qNL*(alpha*Mach)**0.5
@@ -26,36 +28,39 @@ def one_planet( r = 1.0 , rp = 1.0 , q = 1e-3 , alpha = 0.01 , Mach = 20. ):
 	Sigma = S_gap( qt , alpha , Mach )
 	return Sigma
 
+#The Background Density Profile:
+
 def sigma_backgnd( r = 1.0 ):
 	S = math.exp( -(r/80.)**1.5 )*math.exp( -(r/110.)**10. )
 	return S
 
+def get_sigma( r , rs , qs , alphas , Machs ):
+        Sigma = sigma_backgnd(r)
+	Np = len(rs)
+	for j in range(Np):
+		Sigma *= one_planet( r , rs[j] , qs[j] , alphas[j] , Machs[j] )
+	return( Sigma )
+		
+#Disk and Planet Parameters:
 
-
-
-N_planets = 3
 qs = [2.5e-4,2e-4,2e-4]
 rs = [13.1,33.0,68.6]
 alphas = [1e-3,1e-3,1e-3]
 Machs = [10.,12.,14.]
 
+#Range and Resolution of Output:
+
 Rmin = 0.1
 Rmax = 130
-
 Npts = 1000
 
-Sigmas = [1]*Npts
-S_bkgnd = [1]*Npts
 
 for i in range(Npts):
 	x = (i+.5)/Npts
 	r = Rmin*(Rmax/Rmin)**x
-	Sigma = sigma_backgnd(r)
-	S_bkgnd[i] = Sigma
-	for j in range(N_planets):
-		Sigma *= one_planet( r , rs[j] , qs[j] , alphas[j] , Machs[j] )
-	Sigmas[i] = Sigma
-	print r,Sigmas[i], S_bkgnd[i]
+	S_bkgnd = sigma_backgnd(r)
+	Sigma = get_sigma( r , rs , qs , alphas , Machs )
+	print r , Sigma , S_bkgnd
 
 	
 
