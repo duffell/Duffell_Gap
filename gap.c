@@ -5,7 +5,7 @@
 double delta( double q , double alpha , double Mach ){
 
    double qNL = 1.04/pow(Mach,3.);
-   double qW = 21.*qNL*pow(alpha*Mach,0.2)*pow(Mach/20.,1.6);
+   double qW = 34.*qNL*sqrt(alpha*Mach);
    double delta = 1.0;
    if( q>qNL ) delta = sqrt(qNL/q);
    delta += pow(q/qW,3.);
