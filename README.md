@@ -20,7 +20,7 @@ The result is loaded to "output.dat".
 
 Disk and planet parameters are currently hard-coded, you'll have to modify the code yourself if you want to fix that.
 
-I cannot forsee any way this could possibly fail, but life is full of surprises.
+I cannot forsee any way compiling could possibly fail, but life is full of surprises.
 
 
 The python code is just a starter because I know most people prefer to use python and think I'm crazy for writing anything in C.  Eventually I'll try to incorporate this bit of python code into something larger that can do curve-fitting, but that's off in the future.
